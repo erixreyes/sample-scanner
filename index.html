@@ -25,6 +25,9 @@
       --red: #ef4444;
       --red-bg: #1c0000;
       --red-border: #7f1d1d;
+      --yellow: #eab308;
+      --yellow-bg: #1a1000;
+      --yellow-border: #713f12;
       --accent: #3b82f6;
     }
 
@@ -171,6 +174,7 @@
     }
     .status-bar.scanning { color: var(--accent); }
 
+    /* Result card */
     .result-card {
       display: none;
       width: calc(100% - 32px);
@@ -180,16 +184,25 @@
       padding: 16px;
       border: 1px solid;
     }
-    .result-card.ok        { background: var(--green-bg);  border-color: var(--green-border); }
-    .result-card.not_paid  { background: var(--orange-bg); border-color: var(--orange-border); }
-    .result-card.not_found { background: var(--red-bg);    border-color: var(--red-border); }
+    .result-card.ok             { background: var(--green-bg);  border-color: var(--green-border); }
+    .result-card.not_paid       { background: var(--orange-bg); border-color: var(--orange-border); }
+    .result-card.not_found      { background: var(--red-bg);    border-color: var(--red-border); }
+    .result-card.already_scanned{ background: var(--yellow-bg); border-color: var(--yellow-border); }
+
     .rc-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; margin-bottom: 4px; }
     .rc-name  { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
     .rc-msg   { font-size: 13px; opacity: 0.8; line-height: 1.4; }
-    .result-card.ok        .rc-label, .result-card.ok        .rc-name { color: var(--green); }
-    .result-card.not_paid  .rc-label, .result-card.not_paid  .rc-name { color: var(--orange); }
-    .result-card.not_found .rc-label, .result-card.not_found .rc-name { color: var(--red); }
 
+    .result-card.ok              .rc-label,
+    .result-card.ok              .rc-name { color: var(--green); }
+    .result-card.not_paid        .rc-label,
+    .result-card.not_paid        .rc-name { color: var(--orange); }
+    .result-card.not_found       .rc-label,
+    .result-card.not_found       .rc-name { color: var(--red); }
+    .result-card.already_scanned .rc-label,
+    .result-card.already_scanned .rc-name { color: var(--yellow); }
+
+    /* Log */
     .log-section {
       width: 100%;
       max-width: 480px;
@@ -212,9 +225,10 @@
       margin-bottom: 8px;
       border-left: 3px solid;
     }
-    .log-item.ok        { border-color: var(--green); }
-    .log-item.not_paid  { border-color: var(--orange); }
-    .log-item.not_found { border-color: var(--red); }
+    .log-item.ok              { border-color: var(--green); }
+    .log-item.not_paid        { border-color: var(--orange); }
+    .log-item.not_found       { border-color: var(--red); }
+    .log-item.already_scanned { border-color: var(--yellow); }
     .li-name { font-size: 14px; font-weight: 500; }
     .li-time { font-size: 11px; color: var(--muted); }
     .log-empty { font-size: 13px; color: var(--muted); text-align: center; padding: 24px 0; }
@@ -243,7 +257,7 @@
     </div>
     <div class="status-bar scanning" id="status-bar">Scanning for QR code...</div>
     <div class="result-card" id="result-card">
-      <div class="rc-label">Last scan</div>
+      <div class="rc-label" id="rc-label">Last scan</div>
       <div class="rc-name" id="rc-name"></div>
       <div class="rc-msg"  id="rc-msg"></div>
     </div>
@@ -262,6 +276,7 @@
     const ctx        = canvas.getContext('2d');
     const statusBar  = document.getElementById('status-bar');
     const resultCard = document.getElementById('result-card');
+    const rcLabel    = document.getElementById('rc-label');
     const rcName     = document.getElementById('rc-name');
     const rcMsg      = document.getElementById('rc-msg');
     const logList    = document.getElementById('log-list');
@@ -270,6 +285,13 @@
     let lastScanned = '';
     let cooldown    = false;
     const scanLog   = [];
+
+    const statusLabels = {
+      ok:              'Checked in',
+      not_paid:        'Payment not confirmed',
+      not_found:       'Not found',
+      already_scanned: 'Already checked in'
+    };
 
     function requestCamera() {
       const btn = document.getElementById('btn-allow');
@@ -346,16 +368,17 @@
     }
 
     function showResult(status, name, msg) {
-      resultCard.className = 'result-card ' + status;
+      resultCard.className  = 'result-card ' + status;
       resultCard.style.display = 'block';
-      rcName.textContent = name;
-      rcMsg.textContent  = msg;
+      rcLabel.textContent   = statusLabels[status] || 'Last scan';
+      rcName.textContent    = name;
+      rcMsg.textContent     = msg;
     }
 
     function addLog(status, name) {
       const time = new Date().toLocaleTimeString();
       scanLog.unshift({ status, name, time });
-      logCount.textContent = scanLog.length;
+      logCount.textContent = scanLog.filter(e => e.status === 'ok').length;
       logList.innerHTML = scanLog.map(e =>
         '<div class="log-item ' + e.status + '">' +
           '<span class="li-name">' + e.name + '</span>' +
