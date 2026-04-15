@@ -146,7 +146,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_XZv7efH2j8TdRgp0v-Fcc_Yu60FHFdQcUULmhpYkLAt9MmT8txO-IqWPpWeaiayMLQ/exec';
-    const IMGBB_KEY  = ' a9c02e25673bb72e6e029cdf3034ddb2';
+    const IMGBB_KEY  = 'a9c02e25673bb72e6e029cdf3034ddb2';
 
     const video      = document.getElementById('video');
     const scanCanvas = document.getElementById('scanCanvas');
@@ -301,16 +301,25 @@
       flash.classList.add('active');
       setTimeout(() => flash.classList.remove('active'), 150);
 
+      // Show processing indicator immediately
+      scanQueue++;
+      updateQueue();
+      addLog('processing', name);
+      showResult('processing', name, 'Marking attendance...');
+
       try {
         const scanUrl = `${SCRIPT_URL}?action=scan&email=${encodeURIComponent(email)}&name=${encodeURIComponent(params.get('name'))}`;
         const res  = await fetch(scanUrl);
         const data = await res.json();
+        updateLogEntry(name, data.status);
         showResult(data.status, name, data.message);
-        addLog(data.status, name);
       } catch (err) {
+        updateLogEntry(name, 'not_found');
         showResult('not_found', name, 'Network error — try again.');
-        addLog('not_found', name);
       }
+
+      scanQueue--;
+      updateQueue();
     }
 
     // Photo mode — upload to ImgBB then Apps Script, non-blocking
