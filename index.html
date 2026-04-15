@@ -15,75 +15,96 @@
       --orange: #f97316; --orange-bg: #1c0f00; --orange-border: #7c2d12;
       --red: #ef4444; --red-bg: #1c0000; --red-border: #7f1d1d;
       --yellow: #eab308; --yellow-bg: #1a1000; --yellow-border: #713f12;
+      --blue: #3b82f6; --blue-bg: #0a1628; --blue-border: #1e3a5f;
       --accent: #3b82f6;
     }
     html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
     body { display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
-    .header { width: 100%; padding: 16px 20px 12px; border-bottom: 1px solid var(--border); text-align: center; }
-    .header h1 { font-size: 17px; font-weight: 600; }
-    .header p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .header { width: 100%; padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .header-left h1 { font-size: 15px; font-weight: 600; }
+    .header-left p  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    .mode-toggle { display: flex; background: var(--surface2); border-radius: 8px; padding: 3px; gap: 2px; border: 1px solid var(--border); }
+    .mode-btn { padding: 5px 10px; font-size: 11px; font-weight: 500; border: none; border-radius: 6px; cursor: pointer; background: transparent; color: var(--muted); font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+    .mode-btn.active { background: var(--accent); color: #fff; }
 
     #permission-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; text-align: center; gap: 16px; width: 100%; }
     .cam-icon { width: 72px; height: 72px; background: var(--surface2); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; }
     #permission-screen h2 { font-size: 20px; font-weight: 600; }
     #permission-screen p  { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 280px; }
-    .btn-allow { margin-top: 8px; background: var(--accent); color: #fff; border: none; border-radius: 12px; padding: 14px 32px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; max-width: 280px; -webkit-tap-highlight-color: transparent; }
-    .btn-allow:active { opacity: 0.85; transform: scale(0.98); }
-    .btn-allow:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-allow { margin-top: 8px; background: var(--accent); color: #fff; border: none; border-radius: 12px; padding: 14px 32px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; max-width: 280px; }
+    .btn-allow:disabled { opacity: 0.5; }
     #permission-error { font-size: 13px; color: var(--red); display: none; max-width: 280px; line-height: 1.6; background: var(--red-bg); border: 1px solid var(--red-border); border-radius: 10px; padding: 12px 16px; }
 
     #scanner-screen { display: none; width: 100%; flex-direction: column; align-items: center; }
     .video-wrap { position: relative; width: 100%; max-width: 480px; background: #000; overflow: hidden; }
     video { width: 100%; display: block; max-height: 65vw; object-fit: cover; }
     canvas { display: none; }
+
     .viewfinder { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(55vw, 200px); height: min(55vw, 200px); pointer-events: none; }
     .viewfinder::before, .viewfinder::after, .vf-br::before, .vf-br::after { content: ''; position: absolute; width: 22px; height: 22px; border-color: #fff; border-style: solid; }
     .viewfinder::before { top: 0; left: 0;     border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
     .viewfinder::after  { top: 0; right: 0;    border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
     .vf-br::before      { bottom: 0; left: 0;  border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
     .vf-br::after       { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
+
     .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; transition: opacity 0.1s; }
     .flash.active { opacity: 0.8; }
     .scan-line { position: absolute; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); animation: scanline 2s linear infinite; }
     @keyframes scanline { 0% { top: 10%; opacity: 1; } 90% { top: 90%; opacity: 1; } 100% { top: 90%; opacity: 0; } }
 
-    .status-bar { width: 100%; max-width: 480px; padding: 10px 16px; font-size: 12px; color: var(--muted); text-align: center; border-bottom: 1px solid var(--border); }
-    .status-bar.scanning { color: var(--accent); }
+    .camera-paused { position: absolute; inset: 0; background: rgba(0,0,0,0.75); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+    .camera-paused.visible { display: flex; }
+    .camera-paused p { font-size: 13px; color: #fff; }
+    .resume-btn { background: var(--accent); color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
 
-    .result-card { display: none; width: calc(100% - 32px); max-width: 448px; margin: 16px 16px 0; border-radius: 14px; padding: 16px; border: 1px solid; }
+    .status-bar { width: 100%; max-width: 480px; padding: 8px 16px; font-size: 12px; color: var(--muted); text-align: center; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .status-bar.scanning { color: var(--accent); }
+    .queue-badge { background: var(--blue-bg); border: 1px solid var(--blue-border); color: var(--blue); font-size: 11px; padding: 2px 8px; border-radius: 99px; display: none; }
+    .queue-badge.visible { display: inline-block; }
+
+    .result-card { display: none; width: calc(100% - 32px); max-width: 448px; margin: 12px 16px 0; border-radius: 14px; padding: 14px; border: 1px solid; }
     .result-card.ok             { background: var(--green-bg);  border-color: var(--green-border); }
     .result-card.not_paid       { background: var(--orange-bg); border-color: var(--orange-border); }
     .result-card.not_found      { background: var(--red-bg);    border-color: var(--red-border); }
     .result-card.already_scanned{ background: var(--yellow-bg); border-color: var(--yellow-border); }
-    .result-card.processing     { background: var(--surface2);  border-color: var(--border); }
+    .result-card.processing     { background: var(--blue-bg);   border-color: var(--blue-border); }
     .rc-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; margin-bottom: 4px; }
-    .rc-name  { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
+    .rc-name  { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
     .rc-msg   { font-size: 13px; opacity: 0.8; line-height: 1.4; }
     .rc-photo { width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border); display: none; }
     .result-card.ok              .rc-label, .result-card.ok              .rc-name { color: var(--green); }
     .result-card.not_paid        .rc-label, .result-card.not_paid        .rc-name { color: var(--orange); }
     .result-card.not_found       .rc-label, .result-card.not_found       .rc-name { color: var(--red); }
     .result-card.already_scanned .rc-label, .result-card.already_scanned .rc-name { color: var(--yellow); }
-    .result-card.processing      .rc-label, .result-card.processing      .rc-name { color: var(--muted); }
+    .result-card.processing      .rc-label, .result-card.processing      .rc-name { color: var(--blue); }
 
-    .log-section { width: 100%; max-width: 480px; padding: 16px; }
-    .log-section h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
-    .log-item { display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; background: var(--surface); border-radius: 10px; margin-bottom: 8px; border-left: 3px solid; }
+    .log-section { width: 100%; max-width: 480px; padding: 12px 16px; }
+    .log-section h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .log-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--surface); border-radius: 10px; margin-bottom: 6px; border-left: 3px solid; }
     .log-item.ok              { border-color: var(--green); }
     .log-item.not_paid        { border-color: var(--orange); }
     .log-item.not_found       { border-color: var(--red); }
     .log-item.already_scanned { border-color: var(--yellow); }
-    .li-left { display: flex; flex-direction: column; gap: 2px; }
-    .li-name   { font-size: 14px; font-weight: 500; }
+    .log-item.processing      { border-color: var(--blue); }
+    .li-left { display: flex; flex-direction: column; gap: 1px; }
+    .li-name   { font-size: 13px; font-weight: 500; }
     .li-status { font-size: 11px; color: var(--muted); }
     .li-time   { font-size: 11px; color: var(--muted); white-space: nowrap; }
-    .log-empty { font-size: 13px; color: var(--muted); text-align: center; padding: 24px 0; }
+    .log-empty { font-size: 13px; color: var(--muted); text-align: center; padding: 20px 0; }
   </style>
 </head>
 <body>
   <div class="header">
-    <h1>ACSS Attendance Scanner</h1>
-    <p>Event check-in</p>
+    <div class="header-left">
+      <h1>ACSS Attendance Scanner</h1>
+      <p>Event check-in</p>
+    </div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="btn-simple" onclick="setMode('simple')">Simple</button>
+      <button class="mode-btn" id="btn-photo" onclick="setMode('photo')">Photo</button>
+    </div>
   </div>
 
   <div id="permission-screen">
@@ -101,8 +122,15 @@
       <canvas id="snapshot"></canvas>
       <div class="flash" id="flash"></div>
       <div class="viewfinder"><div class="vf-br"></div><div class="scan-line"></div></div>
+      <div class="camera-paused" id="paused-overlay">
+        <p>Camera paused</p>
+        <button class="resume-btn" onclick="resumeCamera()">Resume camera</button>
+      </div>
     </div>
-    <div class="status-bar scanning" id="status-bar">Scanning for QR code...</div>
+    <div class="status-bar scanning" id="status-bar">
+      <span id="status-text">Scanning for QR code...</span>
+      <span class="queue-badge" id="queue-badge">0 processing</span>
+    </div>
     <div class="result-card" id="result-card">
       <div class="rc-label" id="rc-label">Last scan</div>
       <div class="rc-name"  id="rc-name"></div>
@@ -118,7 +146,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_XZv7efH2j8TdRgp0v-Fcc_Yu60FHFdQcUULmhpYkLAt9MmT8txO-IqWPpWeaiayMLQ/exec';
-    const IMGBB_KEY  = 'a9c02e25673bb72e6e029cdf3034ddb2';
+    const IMGBB_KEY  = ' a9c02e25673bb72e6e029cdf3034ddb2';
 
     const video      = document.getElementById('video');
     const scanCanvas = document.getElementById('scanCanvas');
@@ -126,7 +154,9 @@
     const scanCtx    = scanCanvas.getContext('2d');
     const snapCtx    = snapshot.getContext('2d');
     const flash      = document.getElementById('flash');
+    const statusText = document.getElementById('status-text');
     const statusBar  = document.getElementById('status-bar');
+    const queueBadge = document.getElementById('queue-badge');
     const resultCard = document.getElementById('result-card');
     const rcLabel    = document.getElementById('rc-label');
     const rcName     = document.getElementById('rc-name');
@@ -134,16 +164,26 @@
     const rcPhoto    = document.getElementById('rc-photo');
     const logList    = document.getElementById('log-list');
     const logCount   = document.getElementById('log-count');
+    const pausedOverlay = document.getElementById('paused-overlay');
 
-    let lastScanned = '';
-    let cooldown    = false;
-    const scanLog   = [];
+    let currentMode  = 'simple';
+    let lastScanned  = '';
+    let cooldown     = false;
+    let cameraStream = null;
+    let scanQueue    = 0;
+    const scanLog    = [];
 
     const statusLabels = {
       ok: 'Checked in', not_paid: 'Payment not confirmed',
       not_found: 'Not found', already_scanned: 'Already checked in',
       processing: 'Processing...'
     };
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById('btn-simple').classList.toggle('active', mode === 'simple');
+      document.getElementById('btn-photo').classList.toggle('active', mode === 'photo');
+    }
 
     function requestCamera() {
       const btn = document.getElementById('btn-allow');
@@ -155,6 +195,7 @@
         video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
       })
       .then(stream => {
+        cameraStream = stream;
         video.srcObject = stream;
         video.play();
         document.getElementById('permission-screen').style.display = 'none';
@@ -171,96 +212,190 @@
       });
     }
 
+    // Resume camera after tab switch or phone sleep
+    async function resumeCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+        cameraStream = stream;
+        video.srcObject = stream;
+        await video.play();
+        pausedOverlay.classList.remove('visible');
+        statusText.textContent = 'Scanning for QR code...';
+        statusBar.className = 'status-bar scanning';
+        requestAnimationFrame(tick);
+      } catch(e) {
+        console.warn('Resume failed:', e);
+      }
+    }
+
+    // Detect visibility change — resume camera when returning to tab
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && cameraStream) {
+        if (video.paused || video.ended) {
+          video.play().catch(() => {
+            pausedOverlay.classList.add('visible');
+          });
+        }
+      } else if (document.visibilityState === 'hidden') {
+        // Don't stop stream, just let it pause naturally
+      }
+    });
+
+    // Also handle page focus
+    window.addEventListener('focus', () => {
+      if (cameraStream && (video.paused || video.ended)) {
+        video.play().catch(() => {
+          pausedOverlay.classList.add('visible');
+        });
+      }
+    });
+
     function tick() {
+      if (video.paused || video.ended) {
+        pausedOverlay.classList.add('visible');
+        return; // Stop tick loop — resumeCamera will restart it
+      }
+
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
         scanCanvas.width  = video.videoWidth;
         scanCanvas.height = video.videoHeight;
         scanCtx.drawImage(video, 0, 0);
         const img  = scanCtx.getImageData(0, 0, scanCanvas.width, scanCanvas.height);
         const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
+
         if (code && code.data && !cooldown && code.data.includes('action=scan')) {
           if (code.data !== lastScanned) {
             lastScanned = code.data;
             cooldown = true;
-            onQRDetected(code.data);
-            setTimeout(() => { cooldown = false; lastScanned = ''; }, 5000);
+
+            if (currentMode === 'photo') {
+              // Capture snapshot immediately, then process in background
+              snapshot.width  = video.videoWidth;
+              snapshot.height = video.videoHeight;
+              snapCtx.drawImage(video, 0, 0);
+              const dataUrl = snapshot.toDataURL('image/jpeg', 0.7);
+              const base64  = dataUrl.split(',')[1];
+              flash.classList.add('active');
+              setTimeout(() => flash.classList.remove('active'), 150);
+              processPhotoScan(code.data, base64); // runs async in background
+            } else {
+              processSimpleScan(code.data);
+            }
+
+            // Cooldown only blocks same QR — different QRs can scan immediately
+            setTimeout(() => { cooldown = false; lastScanned = ''; }, 3000);
           }
         }
       }
       requestAnimationFrame(tick);
     }
 
-    async function onQRDetected(url) {
-      flash.classList.add('active');
-      setTimeout(() => flash.classList.remove('active'), 150);
-
+    // Simple mode — just hit Apps Script directly
+    async function processSimpleScan(url) {
       const params = new URL(url).searchParams;
       const email  = params.get('email');
       const name   = decodeURIComponent(params.get('name') || 'Unknown');
 
-      showResult('processing', name, 'Uploading photo...');
-      statusBar.textContent = 'Processing...';
-      statusBar.className = 'status-bar';
+      flash.classList.add('active');
+      setTimeout(() => flash.classList.remove('active'), 150);
 
-      // Capture snapshot
-      snapshot.width  = video.videoWidth;
-      snapshot.height = video.videoHeight;
-      snapCtx.drawImage(video, 0, 0);
-      const dataUrl = snapshot.toDataURL('image/jpeg', 0.7);
-      const base64  = dataUrl.split(',')[1];
-
-      // Step 1: Upload photo to ImgBB directly from browser
-      let photoUrl = '';
       try {
-        const formData = new FormData();
-        formData.append('image', base64);
-        const imgRes  = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
-          method: 'POST', body: formData
-        });
-        const imgData = await imgRes.json();
-        if (imgData.success) {
-          photoUrl = imgData.data.url;
-          rcPhoto.src = photoUrl;
-          rcPhoto.style.display = 'block';
-        }
-      } catch (err) {
-        console.warn('ImgBB upload failed:', err);
-      }
-
-      // Step 2: Send to Apps Script via GET with photo URL as parameter
-      try {
-        const scanUrl = `${SCRIPT_URL}?action=scan&email=${encodeURIComponent(email)}&name=${encodeURIComponent(params.get('name'))}&photoUrl=${encodeURIComponent(photoUrl)}`;
+        const scanUrl = `${SCRIPT_URL}?action=scan&email=${encodeURIComponent(email)}&name=${encodeURIComponent(params.get('name'))}`;
         const res  = await fetch(scanUrl);
         const data = await res.json();
         showResult(data.status, name, data.message);
         addLog(data.status, name);
       } catch (err) {
         showResult('not_found', name, 'Network error — try again.');
+        addLog('not_found', name);
       }
-
-      statusBar.textContent = 'Scanning for QR code...';
-      statusBar.className = 'status-bar scanning';
     }
 
-    function showResult(status, name, msg) {
+    // Photo mode — upload to ImgBB then Apps Script, non-blocking
+    async function processPhotoScan(url, base64) {
+      const params = new URL(url).searchParams;
+      const email  = params.get('email');
+      const name   = decodeURIComponent(params.get('name') || 'Unknown');
+
+      // Add to queue immediately — scanner keeps running
+      scanQueue++;
+      updateQueue();
+      addLog('processing', name);
+
+      let photoUrl = '';
+      try {
+        const formData = new FormData();
+        formData.append('image', base64);
+        const imgRes  = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: 'POST', body: formData });
+        const imgData = await imgRes.json();
+        if (imgData.success) photoUrl = imgData.data.url;
+      } catch (err) {
+        console.warn('ImgBB upload failed:', err);
+      }
+
+      try {
+        const scanUrl = `${SCRIPT_URL}?action=scan&email=${encodeURIComponent(email)}&name=${encodeURIComponent(params.get('name'))}&photoUrl=${encodeURIComponent(photoUrl)}`;
+        const res  = await fetch(scanUrl);
+        const data = await res.json();
+
+        // Update log entry from processing → final status
+        updateLogEntry(name, data.status);
+        showResult(data.status, name, data.message, photoUrl);
+      } catch (err) {
+        updateLogEntry(name, 'not_found');
+        showResult('not_found', name, 'Network error — check your connection.');
+      }
+
+      scanQueue--;
+      updateQueue();
+    }
+
+    function updateQueue() {
+      if (scanQueue > 0) {
+        queueBadge.textContent = scanQueue + ' processing';
+        queueBadge.classList.add('visible');
+      } else {
+        queueBadge.classList.remove('visible');
+      }
+    }
+
+    function showResult(status, name, msg, photo) {
       resultCard.className     = 'result-card ' + status;
       resultCard.style.display = 'block';
       rcLabel.textContent      = statusLabels[status] || 'Last scan';
       rcName.textContent       = name;
       rcMsg.textContent        = msg;
-      if (status !== 'ok') { rcPhoto.style.display = 'none'; rcPhoto.src = ''; }
+      if (photo && status === 'ok') {
+        rcPhoto.src = photo;
+        rcPhoto.style.display = 'block';
+      } else {
+        rcPhoto.style.display = 'none';
+      }
     }
 
     function addLog(status, name) {
       const time = new Date().toLocaleTimeString();
-      scanLog.unshift({ status, name, time });
+      scanLog.unshift({ status, name, time, id: name + time });
+      renderLog();
+    }
+
+    function updateLogEntry(name, newStatus) {
+      const entry = scanLog.find(e => e.name === name && e.status === 'processing');
+      if (entry) entry.status = newStatus;
+      renderLog();
       logCount.textContent = scanLog.filter(e => e.status === 'ok').length;
-      logList.innerHTML = scanLog.map(e =>
+    }
+
+    function renderLog() {
+      logCount.textContent = scanLog.filter(e => e.status === 'ok').length;
+      logList.innerHTML = scanLog.length ? scanLog.map(e =>
         '<div class="log-item ' + e.status + '">' +
           '<div class="li-left"><span class="li-name">' + e.name + '</span>' +
           '<span class="li-status">' + (statusLabels[e.status] || e.status) + '</span></div>' +
           '<span class="li-time">' + e.time + '</span></div>'
-      ).join('');
+      ).join('') : '<div class="log-empty">No scans yet</div>';
     }
   </script>
 </body>
