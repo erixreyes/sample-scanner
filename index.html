@@ -36,14 +36,12 @@
     .video-wrap { position: relative; width: 100%; max-width: 480px; background: #000; overflow: hidden; }
     video { width: 100%; display: block; max-height: 65vw; object-fit: cover; }
     canvas { display: none; }
-
     .viewfinder { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(55vw, 200px); height: min(55vw, 200px); pointer-events: none; }
     .viewfinder::before, .viewfinder::after, .vf-br::before, .vf-br::after { content: ''; position: absolute; width: 22px; height: 22px; border-color: #fff; border-style: solid; }
     .viewfinder::before { top: 0; left: 0;     border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
     .viewfinder::after  { top: 0; right: 0;    border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
     .vf-br::before      { bottom: 0; left: 0;  border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
     .vf-br::after       { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
-
     .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; transition: opacity 0.1s; }
     .flash.active { opacity: 0.8; }
     .scan-line { position: absolute; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); animation: scanline 2s linear infinite; }
@@ -119,8 +117,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script>
-    const SCRIPT_URL  = 'https://script.google.com/macros/s/AKfycbz_XZv7efH2j8TdRgp0v-Fcc_Yu60FHFdQcUULmhpYkLAt9MmT8txO-IqWPpWeaiayMLQ/exec';
-    const IMGBB_KEY   = 'YOUR_IMGBB_API_KEY'; // paste your ImgBB key here
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_XZv7efH2j8TdRgp0v-Fcc_Yu60FHFdQcUULmhpYkLAt9MmT8txO-IqWPpWeaiayMLQ/exec';
+    const IMGBB_KEY  = 'YOUR_IMGBB_API_KEY';
 
     const video      = document.getElementById('video');
     const scanCanvas = document.getElementById('scanCanvas');
@@ -153,7 +151,6 @@
       btn.textContent = 'Requesting...';
       btn.disabled = true;
       err.style.display = 'none';
-
       navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
       })
@@ -194,7 +191,6 @@
     }
 
     async function onQRDetected(url) {
-      // Flash
       flash.classList.add('active');
       setTimeout(() => flash.classList.remove('active'), 150);
 
@@ -213,8 +209,8 @@
       const dataUrl = snapshot.toDataURL('image/jpeg', 0.7);
       const base64  = dataUrl.split(',')[1];
 
-      // Step 1: Upload photo directly to ImgBB from browser
-      let photoUrl = null;
+      // Step 1: Upload photo to ImgBB directly from browser
+      let photoUrl = '';
       try {
         const formData = new FormData();
         formData.append('image', base64);
@@ -231,13 +227,10 @@
         console.warn('ImgBB upload failed:', err);
       }
 
-      // Step 2: Send scan + photo URL to Apps Script
+      // Step 2: Send to Apps Script via GET with photo URL as parameter
       try {
-        const res  = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'scan', email, name: params.get('name'), photoUrl })
-        });
+        const scanUrl = `${SCRIPT_URL}?action=scan&email=${encodeURIComponent(email)}&name=${encodeURIComponent(params.get('name'))}&photoUrl=${encodeURIComponent(photoUrl)}`;
+        const res  = await fetch(scanUrl);
         const data = await res.json();
         showResult(data.status, name, data.message);
         addLog(data.status, name);
