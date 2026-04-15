@@ -39,121 +39,62 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow-x: hidden;
-    }
+    body { display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
 
-    .header {
-      width: 100%;
-      padding: 16px 20px 12px;
-      border-bottom: 1px solid var(--border);
-      text-align: center;
-    }
+    .header { width: 100%; padding: 16px 20px 12px; border-bottom: 1px solid var(--border); text-align: center; }
     .header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
     .header p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-    /* Permission screen */
     #permission-screen {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 32px 24px;
-      text-align: center;
-      gap: 16px;
-      width: 100%;
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 32px 24px; text-align: center; gap: 16px; width: 100%;
     }
     .cam-icon {
-      width: 72px; height: 72px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 32px;
+      width: 72px; height: 72px; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px;
     }
     #permission-screen h2 { font-size: 20px; font-weight: 600; }
     #permission-screen p  { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 280px; }
     .btn-allow {
-      margin-top: 8px;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      padding: 14px 32px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      max-width: 280px;
-      -webkit-tap-highlight-color: transparent;
-      transition: opacity 0.15s, transform 0.1s;
+      margin-top: 8px; background: var(--accent); color: #fff; border: none;
+      border-radius: 12px; padding: 14px 32px; font-size: 15px; font-weight: 600;
+      cursor: pointer; width: 100%; max-width: 280px; -webkit-tap-highlight-color: transparent;
     }
     .btn-allow:active { opacity: 0.85; transform: scale(0.98); }
     .btn-allow:disabled { opacity: 0.5; cursor: not-allowed; }
-
     #permission-error {
-      font-size: 13px;
-      color: var(--red);
-      display: none;
-      max-width: 280px;
-      line-height: 1.6;
-      background: var(--red-bg);
-      border: 1px solid var(--red-border);
-      border-radius: 10px;
-      padding: 12px 16px;
+      font-size: 13px; color: var(--red); display: none; max-width: 280px; line-height: 1.6;
+      background: var(--red-bg); border: 1px solid var(--red-border); border-radius: 10px; padding: 12px 16px;
     }
 
-    /* Scanner screen */
-    #scanner-screen {
-      display: none;
-      width: 100%;
-      flex-direction: column;
-      align-items: center;
-    }
+    #scanner-screen { display: none; width: 100%; flex-direction: column; align-items: center; }
 
-    .video-wrap {
-      position: relative;
-      width: 100%;
-      max-width: 480px;
-      background: #000;
-      overflow: hidden;
-    }
-    video {
-      width: 100%;
-      display: block;
-      max-height: 65vw;
-      object-fit: cover;
-    }
-    canvas { display: none; }
+    .video-wrap { position: relative; width: 100%; max-width: 480px; background: #000; overflow: hidden; }
+    video { width: 100%; display: block; max-height: 65vw; object-fit: cover; }
+    canvas#snapshot { display: none; }
+    canvas#scanCanvas { display: none; }
 
     .viewfinder {
-      position: absolute;
-      top: 50%; left: 50%;
+      position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: min(55vw, 200px);
-      height: min(55vw, 200px);
-      pointer-events: none;
+      width: min(55vw, 200px); height: min(55vw, 200px); pointer-events: none;
     }
-    .viewfinder::before, .viewfinder::after,
-    .vf-br::before, .vf-br::after {
-      content: '';
-      position: absolute;
-      width: 22px; height: 22px;
-      border-color: #fff;
-      border-style: solid;
+    .viewfinder::before, .viewfinder::after, .vf-br::before, .vf-br::after {
+      content: ''; position: absolute; width: 22px; height: 22px; border-color: #fff; border-style: solid;
     }
     .viewfinder::before { top: 0; left: 0;     border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
     .viewfinder::after  { top: 0; right: 0;    border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
     .vf-br::before      { bottom: 0; left: 0;  border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
     .vf-br::after       { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
 
+    .flash {
+      position: absolute; inset: 0; background: #fff; opacity: 0;
+      pointer-events: none; transition: opacity 0.1s;
+    }
+    .flash.active { opacity: 0.8; }
+
     .scan-line {
-      position: absolute;
-      left: 0; right: 0; height: 2px;
+      position: absolute; left: 0; right: 0; height: 2px;
       background: linear-gradient(90deg, transparent, var(--accent), transparent);
       animation: scanline 2s linear infinite;
     }
@@ -164,73 +105,47 @@
     }
 
     .status-bar {
-      width: 100%;
-      max-width: 480px;
-      padding: 10px 16px;
-      font-size: 12px;
-      color: var(--muted);
-      text-align: center;
-      border-bottom: 1px solid var(--border);
+      width: 100%; max-width: 480px; padding: 10px 16px;
+      font-size: 12px; color: var(--muted); text-align: center; border-bottom: 1px solid var(--border);
     }
     .status-bar.scanning { color: var(--accent); }
 
-    /* Result card */
     .result-card {
-      display: none;
-      width: calc(100% - 32px);
-      max-width: 448px;
-      margin: 16px 16px 0;
-      border-radius: 14px;
-      padding: 16px;
-      border: 1px solid;
+      display: none; width: calc(100% - 32px); max-width: 448px;
+      margin: 16px 16px 0; border-radius: 14px; padding: 16px; border: 1px solid;
     }
     .result-card.ok             { background: var(--green-bg);  border-color: var(--green-border); }
     .result-card.not_paid       { background: var(--orange-bg); border-color: var(--orange-border); }
     .result-card.not_found      { background: var(--red-bg);    border-color: var(--red-border); }
     .result-card.already_scanned{ background: var(--yellow-bg); border-color: var(--yellow-border); }
+    .result-card.uploading      { background: var(--surface2);  border-color: var(--border); }
 
     .rc-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; margin-bottom: 4px; }
     .rc-name  { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
     .rc-msg   { font-size: 13px; opacity: 0.8; line-height: 1.4; }
+    .rc-photo { width: 100%; max-width: 160px; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border); }
 
-    .result-card.ok              .rc-label,
-    .result-card.ok              .rc-name { color: var(--green); }
-    .result-card.not_paid        .rc-label,
-    .result-card.not_paid        .rc-name { color: var(--orange); }
-    .result-card.not_found       .rc-label,
-    .result-card.not_found       .rc-name { color: var(--red); }
-    .result-card.already_scanned .rc-label,
-    .result-card.already_scanned .rc-name { color: var(--yellow); }
+    .result-card.ok              .rc-label, .result-card.ok              .rc-name { color: var(--green); }
+    .result-card.not_paid        .rc-label, .result-card.not_paid        .rc-name { color: var(--orange); }
+    .result-card.not_found       .rc-label, .result-card.not_found       .rc-name { color: var(--red); }
+    .result-card.already_scanned .rc-label, .result-card.already_scanned .rc-name { color: var(--yellow); }
+    .result-card.uploading       .rc-label, .result-card.uploading       .rc-name { color: var(--muted); }
 
-    /* Log */
-    .log-section {
-      width: 100%;
-      max-width: 480px;
-      padding: 16px;
-    }
-    .log-section h2 {
-      font-size: 11px; font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 10px;
-    }
+    .log-section { width: 100%; max-width: 480px; padding: 16px; }
+    .log-section h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
     .log-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 11px 14px;
-      background: var(--surface);
-      border-radius: 10px;
-      margin-bottom: 8px;
-      border-left: 3px solid;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 11px 14px; background: var(--surface); border-radius: 10px;
+      margin-bottom: 8px; border-left: 3px solid;
     }
     .log-item.ok              { border-color: var(--green); }
     .log-item.not_paid        { border-color: var(--orange); }
     .log-item.not_found       { border-color: var(--red); }
     .log-item.already_scanned { border-color: var(--yellow); }
-    .li-name { font-size: 14px; font-weight: 500; }
-    .li-time { font-size: 11px; color: var(--muted); }
+    .li-left  { display: flex; flex-direction: column; gap: 2px; }
+    .li-name  { font-size: 14px; font-weight: 500; }
+    .li-status{ font-size: 11px; color: var(--muted); }
+    .li-time  { font-size: 11px; color: var(--muted); white-space: nowrap; }
     .log-empty { font-size: 13px; color: var(--muted); text-align: center; padding: 24px 0; }
   </style>
 </head>
@@ -252,17 +167,20 @@
   <div id="scanner-screen">
     <div class="video-wrap">
       <video id="video" autoplay playsinline muted></video>
-      <canvas id="canvas"></canvas>
+      <canvas id="scanCanvas"></canvas>
+      <canvas id="snapshot"></canvas>
+      <div class="flash" id="flash"></div>
       <div class="viewfinder"><div class="vf-br"></div><div class="scan-line"></div></div>
     </div>
     <div class="status-bar scanning" id="status-bar">Scanning for QR code...</div>
     <div class="result-card" id="result-card">
       <div class="rc-label" id="rc-label">Last scan</div>
-      <div class="rc-name" id="rc-name"></div>
-      <div class="rc-msg"  id="rc-msg"></div>
+      <div class="rc-name"  id="rc-name"></div>
+      <div class="rc-msg"   id="rc-msg"></div>
+      <img class="rc-photo" id="rc-photo" src="" alt="" style="display:none;" />
     </div>
     <div class="log-section">
-      <h2>Scan log — <span id="log-count">0</span> scanned</h2>
+      <h2>Scan log — <span id="log-count">0</span> checked in</h2>
       <div id="log-list"><div class="log-empty">No scans yet</div></div>
     </div>
   </div>
@@ -272,13 +190,17 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_XZv7efH2j8TdRgp0v-Fcc_Yu60FHFdQcUULmhpYkLAt9MmT8txO-IqWPpWeaiayMLQ/exec';
 
     const video      = document.getElementById('video');
-    const canvas     = document.getElementById('canvas');
-    const ctx        = canvas.getContext('2d');
+    const scanCanvas = document.getElementById('scanCanvas');
+    const snapshot   = document.getElementById('snapshot');
+    const scanCtx    = scanCanvas.getContext('2d');
+    const snapCtx    = snapshot.getContext('2d');
+    const flash      = document.getElementById('flash');
     const statusBar  = document.getElementById('status-bar');
     const resultCard = document.getElementById('result-card');
     const rcLabel    = document.getElementById('rc-label');
     const rcName     = document.getElementById('rc-name');
     const rcMsg      = document.getElementById('rc-msg');
+    const rcPhoto    = document.getElementById('rc-photo');
     const logList    = document.getElementById('log-list');
     const logCount   = document.getElementById('log-count');
 
@@ -290,7 +212,8 @@
       ok:              'Checked in',
       not_paid:        'Payment not confirmed',
       not_found:       'Not found',
-      already_scanned: 'Already checked in'
+      already_scanned: 'Already checked in',
+      uploading:       'Processing...'
     };
 
     function requestCamera() {
@@ -307,8 +230,7 @@
         video.srcObject = stream;
         video.play();
         document.getElementById('permission-screen').style.display = 'none';
-        const ss = document.getElementById('scanner-screen');
-        ss.style.display = 'flex';
+        document.getElementById('scanner-screen').style.display = 'flex';
         requestAnimationFrame(tick);
       })
       .catch(e => {
@@ -327,17 +249,17 @@
 
     function tick() {
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        canvas.width  = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0);
-        const img  = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        scanCanvas.width  = video.videoWidth;
+        scanCanvas.height = video.videoHeight;
+        scanCtx.drawImage(video, 0, 0);
+        const img  = scanCtx.getImageData(0, 0, scanCanvas.width, scanCanvas.height);
         const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
 
         if (code && code.data && !cooldown && code.data.includes('action=scan')) {
           if (code.data !== lastScanned) {
             lastScanned = code.data;
             cooldown = true;
-            processScan(code.data);
+            takeSnapshotAndScan(code.data);
             setTimeout(() => { cooldown = false; lastScanned = ''; }, 4000);
           }
         }
@@ -345,34 +267,71 @@
       requestAnimationFrame(tick);
     }
 
-    function processScan(url) {
-      statusBar.textContent = 'Processing scan...';
-      statusBar.className = 'status-bar';
-      fetch(url)
-        .then(r => r.json())
-        .then(data => {
-          const name = extractName(url);
-          showResult(data.status, name, data.message);
-          addLog(data.status, name);
-          statusBar.textContent = 'Scanning for QR code...';
-          statusBar.className = 'status-bar scanning';
-        })
-        .catch(() => {
-          statusBar.textContent = 'Network error — try again.';
-          statusBar.className = 'status-bar';
-          setTimeout(() => {
-            statusBar.textContent = 'Scanning for QR code...';
-            statusBar.className = 'status-bar scanning';
-          }, 3000);
-        });
+    function takeSnapshotAndScan(url) {
+      // Flash effect
+      flash.classList.add('active');
+      setTimeout(() => flash.classList.remove('active'), 150);
+
+      // Capture current frame as JPEG
+      snapshot.width  = video.videoWidth;
+      snapshot.height = video.videoHeight;
+      snapCtx.drawImage(video, 0, 0);
+      const photoDataUrl = snapshot.toDataURL('image/jpeg', 0.7);
+
+      // Show uploading state immediately
+      const name = extractName(url);
+      showResult('uploading', name, 'Capturing photo and processing...');
+
+      // Hit the scan URL with the photo attached
+      processScan(url, photoDataUrl, name);
     }
 
-    function showResult(status, name, msg) {
-      resultCard.className  = 'result-card ' + status;
+    function processScan(url, photoDataUrl, name) {
+      statusBar.textContent = 'Processing scan...';
+      statusBar.className = 'status-bar';
+
+      // Strip base64 header, send just the data
+      const base64 = photoDataUrl.split(',')[1];
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'scan',
+          email: new URL(url).searchParams.get('email'),
+          name:  new URL(url).searchParams.get('name'),
+          photo: base64
+        })
+      })
+      .then(r => r.json())
+      .then(data => {
+        showResult(data.status, name, data.message, photoDataUrl);
+        addLog(data.status, name);
+        statusBar.textContent = 'Scanning for QR code...';
+        statusBar.className = 'status-bar scanning';
+      })
+      .catch(() => {
+        statusBar.textContent = 'Network error — try again.';
+        statusBar.className = 'status-bar';
+        setTimeout(() => {
+          statusBar.textContent = 'Scanning for QR code...';
+          statusBar.className = 'status-bar scanning';
+        }, 3000);
+      });
+    }
+
+    function showResult(status, name, msg, photoDataUrl) {
+      resultCard.className     = 'result-card ' + status;
       resultCard.style.display = 'block';
-      rcLabel.textContent   = statusLabels[status] || 'Last scan';
-      rcName.textContent    = name;
-      rcMsg.textContent     = msg;
+      rcLabel.textContent      = statusLabels[status] || 'Last scan';
+      rcName.textContent       = name;
+      rcMsg.textContent        = msg;
+      if (photoDataUrl && status === 'ok') {
+        rcPhoto.src          = photoDataUrl;
+        rcPhoto.style.display = 'block';
+      } else {
+        rcPhoto.style.display = 'none';
+      }
     }
 
     function addLog(status, name) {
@@ -381,16 +340,18 @@
       logCount.textContent = scanLog.filter(e => e.status === 'ok').length;
       logList.innerHTML = scanLog.map(e =>
         '<div class="log-item ' + e.status + '">' +
-          '<span class="li-name">' + e.name + '</span>' +
+          '<div class="li-left">' +
+            '<span class="li-name">' + e.name + '</span>' +
+            '<span class="li-status">' + (statusLabels[e.status] || e.status) + '</span>' +
+          '</div>' +
           '<span class="li-time">' + e.time + '</span>' +
         '</div>'
       ).join('');
     }
 
     function extractName(url) {
-      try {
-        return decodeURIComponent(new URL(url).searchParams.get('name') || 'Unknown');
-      } catch { return 'Unknown'; }
+      try { return decodeURIComponent(new URL(url).searchParams.get('name') || 'Unknown'); }
+      catch { return 'Unknown'; }
     }
   </script>
 </body>
